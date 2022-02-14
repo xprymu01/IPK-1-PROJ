@@ -26,17 +26,14 @@ int get_cpu_load(){ // Inspired by https://stackoverflow.com/a/23376195
     fscanf(fp,"%*s %Lf %Lf %Lf %Lf %Lf %Lf %Lf %Lf",&b[0],&b[1],&b[2],&b[3],&b[4],&b[5],&b[6],&b[7]);
     fclose(fp);
     
-    float prevIdle = a[3]+a[4];
+    float pIdle = a[3]+a[4];
     float idle = b[3]+b[4];
 
-    float prevNonIdle = a[0]+a[1]+a[2]+a[5]+a[6]+a[7];
+    float pNonIdle = a[0]+a[1]+a[2]+a[5]+a[6]+a[7];
     float nonIdle = b[0]+b[1]+b[2]+b[5]+b[6]+b[7];
 
-    float prevTotal = prevIdle+prevNonIdle;
-    float total = idle+nonIdle;
-
-    float totald = total-prevTotal;
-    float idled = idle - prevIdle;
+    float totald = (idle+nonIdle)-(pIdle+pNonIdle);
+    float idled = idle - pIdle;
 
     int CPU_percentage = 100*(totald-idled)/totald;
 
@@ -92,12 +89,10 @@ int main(int argc, char**argv){
             snprintf(server_response,sizeof(server_response),"HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: %ld\n\n%s",strlen(hostname),hostname);           
         }else if(strcmp(path,"/cpu-name") == 0){
             // parsing  cpuinfo for model name
-            FILE *cpuinfo = fopen("/proc/cpuinfo","r");
+            FILE *cpuinfo = popen("cat /proc/cpuinfo | grep 'model name' | head -n 1","r");
             char *file_line = NULL;
             size_t len = 0;
-            for(int i = 0;i<5;i++){
-                getline(&file_line,&len,cpuinfo);
-            }
+            getline(&file_line,&len,cpuinfo);
             char *cpu_name = strchr(file_line,':');        
             cpu_name = strchr(cpu_name,' ')+1;
             snprintf(server_response,sizeof(server_response),"HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: %ld\n\n%s",strlen(cpu_name),cpu_name);
