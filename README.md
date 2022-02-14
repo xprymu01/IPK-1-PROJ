@@ -7,17 +7,17 @@ Server přijímá GET requesty na zadaném portu.
 Přijímané GET requesty : /hostname, /cpu-name, /load
 ## Instalace
 ```
-$ make
+make
 ```
 ## Použití
 ```
-$ ./hinfosvc PORT
+./hinfosvc PORT
 ```
 ### Příklad využití
 ```
 $ make
-$ ./hinfosvc 12345 &
-$ curl http://localhost:12345/hostname
-$ curl http://localhost:12345/cpu-name
-$ curl http://localhost:12345/load
+./hinfosvc 12345 &
+curl http://localhost:12345/hostname
+curl http://localhost:12345/cpu-name
+curl http://localhost:12345/load
 ```
